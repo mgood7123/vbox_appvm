@@ -54,6 +54,10 @@ jobs:
         run: |
           ./unpack.sh
 
+      - name: list vbox files
+        run: |
+          ls -l VirtualBox-7.0.18
+
       - name: build vbox
         run: |
           export MSYS=winsymlinks:native
