@@ -63,7 +63,6 @@ jobs:
       - name: build vbox
         run: |
           export MSYS=winsymlinks:native
+          export PATH="$(pwd)/VirtualBox-7.0.18/kbuild/bin/win.amd64:$PATH"
           cd VirtualBox-7.0.18
-          cd kbuild
-          ./configure || true
-          make
+          kmk
