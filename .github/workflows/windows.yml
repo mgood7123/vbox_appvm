@@ -57,7 +57,7 @@ jobs:
       - name: list vbox files
         run: |
           ls -l VirtualBox-7.0.18
-          ls -l VirtualBox-7.0.18/kbuild
+          ls -l VirtualBox-7.0.18/kbuild/bin
 
 
       - name: build vbox
