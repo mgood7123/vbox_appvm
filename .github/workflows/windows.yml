@@ -57,10 +57,13 @@ jobs:
       - name: list vbox files
         run: |
           ls -l VirtualBox-7.0.18
+          ls -l VirtualBox-7.0.18/kbuild
+
 
       - name: build vbox
         run: |
           export MSYS=winsymlinks:native
           cd VirtualBox-7.0.18
+          cd kbuild
           ./configure || true
           make
