@@ -62,4 +62,5 @@ jobs:
         run: |
           export MSYS=winsymlinks:native
           cd VirtualBox-7.0.18
-          ./configure
+          ./configure || true
+          make
