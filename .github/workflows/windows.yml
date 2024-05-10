@@ -30,7 +30,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
-    name: build xserver - ${{ matrix.name }}
+    name: build appvm - ${{ matrix.name }}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -50,80 +50,12 @@ jobs:
         run: |
           pacman -Sy
 
-      - name: unpack alpine
+      - name: unpack vbox
         run: |
           ./unpack.sh
-          cd alpine
-          ls -l
-          chmod -v +x *.sh
 
-      - name: install qemu
-        run: |
-          # pv and curl needed for download_x.sh
-          pacman -S --noconfirm --needed pactoys sshpass rsync pv curl
-          pacboy -S --noconfirm --needed qemu:p qemu-common:p qemu-guest-agent:p qemu-image-util:p
-
-      - name: poweron alpine
-        run: |
-          cd alpine
-          . ./poweron_alpine.sh
-        
-      - name: unpack xserver
-        run: |
-          ./unpackx.sh
-
-      - name: install xserver deps
-        run: |
-          cd alpine
-          ./exe.sh "sudo apk add autoconf automake mingw-w64-gcc i686-mingw-w64-gcc cmake ninja pkgconf make xmlto python3 w3m gcc g++ bash libtool dos2unix grep gettext gettext-dev doxygen graphviz openjdk8 curl git mesa-demos mesa-dri-gallium"
-          ./exe.sh "sudo ln -s /bin/bash /usr/bin/bash"
-          ./exe.sh "sudo ln -s /bin/sh /usr/bin/sh"
-
-      - name: copy xserver to alpine
-        run: |
-          cd alpine
-         ./exe_i.sh "rm -rf xserver"
-         ./push.sh ../xserver
-         ./exe_i.sh "cd xserver ; chmod +x *.sh"
-         # git clone might checkout as windows line endings
-         ./exe_i.sh "cd xserver ; dos2unix *.sh ; ./download_x.sh dos_to_unix"
-
-      - name: build xserver - Debug
+      - name: build vbox
         run: |
           export MSYS=winsymlinks:native
-          cd alpine
-          ./exe.sh "cd xserver ; ./make.sh"
-
-      - name: archive build directory
-        if: success() # if we cancel during the upload, wait for it to complete
-        run: |
-          export MSYS=winsymlinks:native
-          cd alpine
-          ./pull.sh xserver/BUILD_DEBUG/BUILD_ROOT/ROOTFS
-          cd ..
-          ./split_exe/split.exe --split -r alpine/ROOTFS --name rootfs --size $((1024*1024*500))
-
-      - name: powerff alpine
-        run: |
-          cd alpine
-          ./poweroff_alpine.sh
-
-      - name: list files
-        if: success() # if we cancel during the upload, wait for it to complete
-        run: |
-          ls -l
-      
-      - name: upload build directory
-        if: success() # if we cancel during the upload, wait for it to complete
-        uses: "ncipollo/release-action@v1"
-        with:
-          name: "xserver - windows - RELEASE"
-          tag: "storage--xserver--windows--release"
-          makeLatest: true
-          generateReleaseNotes: false
-          allowUpdates: true
-          artifactErrorsFailBuild: true
-          replacesArtifacts: true
-          removeArtifacts: true
-          artifacts: |
-            ./rootfs.split.*
+          cd VirtualBox-7.0.18
+          ./configure
